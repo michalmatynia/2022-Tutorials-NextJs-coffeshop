@@ -6,38 +6,14 @@ import styles from '../styles/Home.module.css';
 import Banner from '../components/banner';
 import Card from '../components/card';
 
-// import coffeeStoresData from '../data/coffee-stores.json';
+import fetchCoffeeStores from '../lib/coffee-stores';
 
 export async function getStaticProps(context) {
-  //  const data = await fetch ... goes here
-
-  const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: process.env.FOURSQUARE_AUTH,
-    },
-  };
-
-  const response = await fetch(
-    'https://api.foursquare.com/v3/places/search?near=Szczecin&limit=6',
-    options
-  );
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw Error;
-  }
-  // .then((response) => response.json())
-  // .then((response) => console.log(response))
-  // .catch((err) => console.error(err));
-
-  console.log(data);
+  const coffeeStores = await fetchCoffeeStores();
 
   return {
     props: {
-      coffeeStores: data.results,
+      coffeeStores,
     }, // will be passed to the page component as props
   };
 }
