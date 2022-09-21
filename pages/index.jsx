@@ -1,25 +1,50 @@
-import Head from "next/head";
-import Image from "next/image";
+import Head from 'next/head';
+import Image from 'next/image';
 
-import styles from "../styles/Home.module.css";
+import styles from '../styles/Home.module.css';
 
-import Banner from "../components/banner";
-import Card from "../components/card";
+import Banner from '../components/banner';
+import Card from '../components/card';
 
-import coffeeStoresData from "../data/coffee-stores.json";
+// import coffeeStoresData from '../data/coffee-stores.json';
 
 export async function getStaticProps(context) {
   //  const data = await fetch ... goes here
+
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: process.env.FOURSQUARE_AUTH,
+    },
+  };
+
+  const response = await fetch(
+    'https://api.foursquare.com/v3/places/search?near=Szczecin&limit=6',
+    options
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw Error;
+  }
+  // .then((response) => response.json())
+  // .then((response) => console.log(response))
+  // .catch((err) => console.error(err));
+
+  console.log(data);
+
   return {
     props: {
-      coffeeStores: coffeeStoresData,
+      coffeeStores: data.results,
     }, // will be passed to the page component as props
   };
 }
 
 export default function Home(props) {
   const handleOnBannerBtnClick = () => {
-    console.log("hi");
+    console.log('hi');
   };
 
   return (
@@ -44,11 +69,14 @@ export default function Home(props) {
             <div className={styles.cardLayout}>
               {props.coffeeStores.map((coffeeStore) => (
                 <Card
-                  id={coffeeStore.id}
-                  key={coffeeStore.id}
+                  id={coffeeStore.fsq_id}
+                  key={coffeeStore.fsq_id}
                   title={coffeeStore.name}
-                  imgUrl={coffeeStore.imgUrl}
-                  href={`/coffee-store/${coffeeStore.id}`}
+                  imgUrl={
+                    coffeeStore.imgUrl ||
+                    'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                  }
+                  href={`/coffee-store/${coffeeStore.fsq_id}`}
                   className={styles.card}
                 />
               ))}
