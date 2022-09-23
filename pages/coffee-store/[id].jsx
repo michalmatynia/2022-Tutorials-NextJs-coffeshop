@@ -12,7 +12,9 @@ import styles from '../../styles/coffee-store.module.css';
 export async function getStaticProps(staticProps) {
   const { params } = staticProps;
 
-  const coffeeStores = await fetchCoffeeStores();
+  let latLong;
+
+  const coffeeStores = await fetchCoffeeStores({ latLong });
 
   return {
     props: {
@@ -24,7 +26,8 @@ export async function getStaticProps(staticProps) {
 }
 
 export async function getStaticPaths() {
-  const coffeeStores = await fetchCoffeeStores();
+  let latLong;
+  const coffeeStores = await fetchCoffeeStores({ latLong });
 
   const paths = coffeeStores.map((coffeeStore) => ({
     params: {
@@ -45,7 +48,7 @@ function CoffeeStore(props) {
     return <div>Loading...</div>;
   }
 
-  const { address, name, neighbourhood, imgUrl } = props.coffeeStore;
+  const { location, name, distance, imgUrl } = props.coffeeStore;
 
   const handleUpvoteButton = () => {
     console.log('ts');
@@ -81,12 +84,14 @@ function CoffeeStore(props) {
         <div className={cls('glass', styles.col2)}>
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/places.svg" width="24" height="24" />
-            <p className={styles.text}>{address}</p>
+            <p className={styles.text}>{location.address}</p>
           </div>
-          <div className={styles.iconWrapper}>
-            <Image src="/static/icons/nearMe.svg" width="24" height="24" />
-            <p className={styles.text}>{neighbourhood}</p>
-          </div>
+          {distance && (
+            <div className={styles.iconWrapper}>
+              <Image src="/static/icons/nearMe.svg" width="24" height="24" />
+              <p className={styles.text}>{distance} m</p>
+            </div>
+          )}
           <div className={styles.iconWrapper}>
             <Image src="/static/icons/star.svg" width="24" height="24" />
             <p className={styles.text}>1</p>
