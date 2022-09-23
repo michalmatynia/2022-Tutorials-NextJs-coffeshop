@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../styles/Home.module.css';
 
 import Banner from '../components/banner';
@@ -25,44 +25,29 @@ export default function Home(props) {
   const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
-  // useEffect(async () => {
-  //   console.log(latLong);
-  //   if (latLong) {
-  //     try {
-  //       const fetchedCoffeeStores = await fetchCoffeeStores({ latLong });
+    const [coffeeStores, setCoffeeStores ] = useState([])
+    const [coffeeStoresError, setError] = useState(null)
 
-  //       console.log(fetchedCoffeeStores);
-  //     } catch (error) {
-  //       // set error
-  //       console.log('err');
-  //     }
-  //   }
-  // }, [latLong]);
+  useEffect( () => {
 
-  // -------
-  // async function fetchData() {
-  //   // You can await here
-  //   const response = await MyAPI.getData(someId);
-  //   // ...
-  // }
-  // fetchData();
-  // ----
-
-  useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       const fetchedCoffeeStores = await fetchCoffeeStores({ latLong });
 
-      return fetchedCoffeeStores;
+      setCoffeeStores(fetchedCoffeeStores)
     }
-    if (latLong) {
-      try {
-        const fetchedCoffeeStores = fetchData();
-        console.log(fetchedCoffeeStores);
-      } catch (error) {
-        // set error
-        console.log('err');
+      // call the function
+      if (latLong) {
+        fetchData()
+        // make sure to catch any error
+        .catch((err)=> {
+          console.error,
+          setError(err.message)
+        }
+
+          );
       }
-    }
+
+
   }, [latLong]);
 
   const handleOnBannerBtnClick = () => {
@@ -84,9 +69,33 @@ export default function Home(props) {
           handleOnClick={handleOnBannerBtnClick}
         />
         {locationErrorMsg && <p>Something went wrong: {locationErrorMsg} </p>}
+        {coffeeStoresError && <p>Something went wrong: {coffeeStoresError} </p>}
+
         <div className={styles.heroImage}>
           <Image src="/static/hero-image.png" width={700} height={400} />
         </div>
+
+        {coffeeStores.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading2}>Stores Near Me</h2>
+            <div className={styles.cardLayout}>
+              {coffeeStores.map((coffeeStore) => (
+                <Card
+                  id={coffeeStore.fsq_id}
+                  key={coffeeStore.fsq_id}
+                  title={coffeeStore.name}
+                  imgUrl={
+                    coffeeStore.imgUrl ||
+                    'https://images.unsplash.com/photo-1504753793650-d4a2b783c15e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'
+                  }
+                  href={`/coffee-store/${coffeeStore.fsq_id}`}
+                  className={styles.card}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
         {props.coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Toronto stores</h2>
