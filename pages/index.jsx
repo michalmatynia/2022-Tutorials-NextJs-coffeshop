@@ -12,8 +12,7 @@ import fetchCoffeeStores from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/use-track-location';
 
 export async function getStaticProps(context) {
-  let latLong;
-  const coffeeStores = await fetchCoffeeStores({ latLong });
+  const coffeeStores = await fetchCoffeeStores({});
 
   return {
     props: {
@@ -26,18 +25,45 @@ export default function Home(props) {
   const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
-  console.log(latLong, locationErrorMsg);
-
   // useEffect(async () => {
+  //   console.log(latLong);
   //   if (latLong) {
   //     try {
   //       const fetchedCoffeeStores = await fetchCoffeeStores({ latLong });
+
+  //       console.log(fetchedCoffeeStores);
   //     } catch (error) {
   //       // set error
   //       console.log('err');
   //     }
   //   }
   // }, [latLong]);
+
+  // -------
+  // async function fetchData() {
+  //   // You can await here
+  //   const response = await MyAPI.getData(someId);
+  //   // ...
+  // }
+  // fetchData();
+  // ----
+
+  useEffect(() => {
+    async function fetchData() {
+      const fetchedCoffeeStores = await fetchCoffeeStores({ latLong });
+
+      return fetchedCoffeeStores;
+    }
+    if (latLong) {
+      try {
+        const fetchedCoffeeStores = fetchData();
+        console.log(fetchedCoffeeStores);
+      } catch (error) {
+        // set error
+        console.log('err');
+      }
+    }
+  }, [latLong]);
 
   const handleOnBannerBtnClick = () => {
     handleTrackLocation();

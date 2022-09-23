@@ -27,6 +27,7 @@ const useTrackLocation = () => {
       setIsFindingLocation(false);
     } else {
       // setLocationErrorMsg = 'Locating…';
+
       navigator.geolocation.getCurrentPosition(success, error);
     }
   };
