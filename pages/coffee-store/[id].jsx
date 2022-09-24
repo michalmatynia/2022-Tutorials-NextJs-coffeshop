@@ -16,18 +16,20 @@ export async function getStaticProps(staticProps) {
 
   const coffeeStores = await fetchCoffeeStores({ latLong });
 
+  const findCoffeeStoreById = coffeeStores.find(
+    (coffeeStore) => coffeeStore.fsq_id.toString() === params.id
+  )
+
   return {
     props: {
-      coffeeStore: coffeeStores.find(
-        (coffeeStore) => coffeeStore.fsq_id.toString() === params.id
-      ),
+      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
     }, // will be passed to the page component as props
   };
 }
 
 export async function getStaticPaths() {
-  let latLong;
-  const coffeeStores = await fetchCoffeeStores();
+  // let latLong;
+  const coffeeStores = await fetchCoffeeStores({});
 
   const paths = coffeeStores.map((coffeeStore) => ({
     params: {
