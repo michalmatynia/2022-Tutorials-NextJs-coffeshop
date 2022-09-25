@@ -1,38 +1,43 @@
-import { createContext } from "react";
-import "../styles/globals.css";
+import { createContext, useReducer, useMemo } from 'react';
+import '../styles/globals.css';
 
-const StoreContext = createContext()
+const StoreContext = createContext();
 
 const ACTION_TYPES = {
   SET_LAT_LONG: 'SET_LAT_LONG',
   SET_COFFEE_STORES: 'SET_COFFEE_STORES',
-}
+};
 
 const storeReducer = (state, action) => {
   switch (action.type) {
     case ACTION_TYPES.SET_LAT_LONG: {
-return {...state, latLong: action.payload.latLong}
+      return { ...state, latLong: action.payload.latLong };
     }
     case ACTION_TYPES.SET_COFFEE_STORES: {
-      return {...state, latLong: action.payload.coffeeStores}
-
+      return { ...state, coffeeStores: action.payload.coffeeStores };
     }
     default:
       throw new Error(`Unhandled action type: ${action.type}`);
   }
-}
+};
 
-const StoreProvider = ({children}) => {
+function StoreProvider({ children }) {
   const initialState = {
-  latLong: "",
-  coffeeStores: [],
-  }
+    latLong: '',
+    coffeeStores: [],
+  };
 
-  const [ state, dispatch ] = useReducer(storeReducer, initialState)
 
-  return  <StoreContext.Provider value={{state, dispatch}}>
-{children}
-</StoreContext.Provider>
+  const [state, dispatch] = useReducer(storeReducer, initialState);
+
+  // const stateMemoized = useMemo(() => ({ state }), []);
+  // const dispatchMemoized = useMemo(() => ({ dispatch }), []);
+
+  return (
+    <StoreContext.Provider value={{ state, dispatch }}>
+      {children}
+    </StoreContext.Provider>
+  );
 }
 
 function MyApp({ Component, pageProps }) {
