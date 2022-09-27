@@ -10,7 +10,7 @@ import Card from '../components/card';
 import fetchCoffeeStores from '../lib/coffee-stores';
 
 import useTrackLocation from '../hooks/use-track-location';
-import { ACTION_TYPES, StoreContext } from './_app';
+import { ACTION_TYPES, StoreContext } from '../store/store-context';
 
 export async function getStaticProps(context) {
   const coffeeStores = await fetchCoffeeStores({});
@@ -35,25 +35,31 @@ export default function Home(props) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const fetchedCoffeeStores = await fetchCoffeeStores({ latLong });
+      const response = await fetch(
+        `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=6`
+      );
 
+      // fetchCoffeeStores({ latLong });
+      const formattedCoffeeStores = await response.json();
       // setCoffeeStores(fetchedCoffeeStores);
       dispatch({
         type: ACTION_TYPES.SET_COFFEE_STORES,
         payload: {
-          coffeeStores: fetchedCoffeeStores,
+          coffeeStores: formattedCoffeeStores,
         },
       });
     };
+
+    setError('');
     // call the function
     if (latLong) {
       fetchData()
         // make sure to catch any error
         .catch((err) => {
-          console.error, setError(err.message);
+          setError(err.message);
         });
     }
-  }, [latLong]);
+  }, [dispatch, latLong]);
 
   const handleOnBannerBtnClick = () => {
     handleTrackLocation();
