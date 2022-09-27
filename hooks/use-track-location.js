@@ -1,15 +1,24 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { ACTION_TYPES, StoreContext } from '../pages/_app';
 
 const useTrackLocation = () => {
   const [locationErrorMsg, setLocationErrorMsg] = useState('');
-  const [latLong, setLatLong] = useState('');
+  // const [latLong, setLatLong] = useState('');
   const [isFindingLocation, setIsFindingLocation] = useState(false);
+
+  const { dispatch } = useContext(StoreContext);
 
   const success = (position) => {
     const { latitude } = position.coords;
     const { longitude } = position.coords;
 
-    setLatLong(`${latitude},${longitude}`);
+    // setLatLong(`${latitude},${longitude}`);
+
+    dispatch({
+      type: ACTION_TYPES.SET_LAT_LONG,
+      payload: { latLong: `${latitude},${longitude}` },
+    });
+
     setLocationErrorMsg('');
     setIsFindingLocation(false);
   };
@@ -28,12 +37,14 @@ const useTrackLocation = () => {
     } else {
       // setLocationErrorMsg = 'Locating…';
 
-      navigator.geolocation.getCurrentPosition(success, error);
+      navigator.geolocation.getCurrentPosition(success, error, {
+        enableHighAccuracy: true,
+      });
     }
   };
 
   return {
-    latLong,
+    // latLong,
     handleTrackLocation,
     locationErrorMsg,
     isFindingLocation,

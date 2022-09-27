@@ -1,13 +1,18 @@
-import { useRouter } from 'next/router';
+import { useRouter, useState } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import Image from 'next/image';
 
 import cls from 'classnames';
 // import coffeeStoresData from '../../data/coffee-stores.json';
+import { useEffect, useContext } from 'react';
 import fetchCoffeeStores from '../../lib/coffee-stores';
 
+import { StoreContext } from '../_app';
+
 import styles from '../../styles/coffee-store.module.css';
+
+import { isEmpty } from '../../utils';
 
 export async function getStaticProps(staticProps) {
   const { params } = staticProps;
@@ -18,11 +23,11 @@ export async function getStaticProps(staticProps) {
 
   const findCoffeeStoreById = coffeeStores.find(
     (coffeeStore) => coffeeStore.fsq_id.toString() === params.id
-  )
+  );
 
   return {
     props: {
-      coffeeStore: findCoffeeStoreById ? findCoffeeStoreById : {},
+      coffeeStore: findCoffeeStoreById || {},
     }, // will be passed to the page component as props
   };
 }
@@ -43,14 +48,31 @@ export async function getStaticPaths() {
   };
 }
 
-function CoffeeStore(props) {
+function CoffeeStore(initialProps) {
   const router = useRouter();
+  console.log('props', initialProps);
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+
+  const {
+    state: { coffeeStores },
+  } = useContext(StoreContext);
+
+  const { id } = router.query;
+  useEffect(() => {
+    if (isEmpty(initialProps.coffeeStore))
+      if (coffeeStores.length > 0) {
+        const findCoffeeStoreById = coffeeStores.find(
+          (each) => each.fsq_id.toString() === id
+        );
+        setCoffeeStore(findCoffeeStoreById);
+      }
+  }, [coffeeStores, id, initialProps.coffeeStore]);
 
   if (router.isFallback) {
     return <div>Loading...</div>;
   }
 
-  const { location, name, distance, imgUrl } = props.coffeeStore;
+  const { location, name, distance, imgUrl } = coffeeStore;
 
   const handleUpvoteButton = () => {
     console.log('ts');

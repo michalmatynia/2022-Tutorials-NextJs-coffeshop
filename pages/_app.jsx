@@ -1,9 +1,9 @@
-import { createContext, useReducer, useMemo } from 'react';
+import { createContext, useReducer } from 'react';
 import '../styles/globals.css';
 
-const StoreContext = createContext();
+export const StoreContext = createContext();
 
-const ACTION_TYPES = {
+export const ACTION_TYPES = {
   SET_LAT_LONG: 'SET_LAT_LONG',
   SET_COFFEE_STORES: 'SET_COFFEE_STORES',
 };
@@ -26,7 +26,6 @@ function StoreProvider({ children }) {
     latLong: '',
     coffeeStores: [],
   };
-
 
   const [state, dispatch] = useReducer(storeReducer, initialState);
 
