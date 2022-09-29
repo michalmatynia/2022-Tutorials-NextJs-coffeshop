@@ -10,27 +10,54 @@ const table = base('coffee-stores');
 
 const createCoffeeStore = async (req, res) => {
   if (req.method === 'POST') {
+    const { id, name, neighbourhood, address, imgUrl, voting } = req.body;
+
     try {
-      const findCoffeeStoreRecords = await table
-        .select({
-          filterByFormula: `id="0"`,
-        })
-        .firstPage();
+      if (id) {
+        const findCoffeeStoreRecords = await table
+          .select({
+            filterByFormula: `id=${id}`,
+          })
+          .firstPage();
 
-      if (findCoffeeStoreRecords.length !== 0) {
-        const records = findCoffeeStoreRecords.map((record) => ({
-          ...record.fields,
-        }));
+        if (findCoffeeStoreRecords.length !== 0) {
+          const records = findCoffeeStoreRecords.map((record) => ({
+            ...record.fields,
+          }));
 
-        res.json(records);
+          res.json(records);
+        }
+
+        if (name) {
+          const createRecords = await table.create([
+            {
+              fields: {
+                id,
+                name,
+                address,
+                neighbourhood,
+                voting,
+                imgUrl,
+              },
+            },
+          ]);
+
+          const records = createRecords.map((record) => ({
+            ...record.fields,
+          }));
+
+          res.json(records);
+        } else {
+          res.status(400);
+          res.json({ message: 'name is missing' });
+        }
       } else {
-        res.json({ message: 'create a record' });
-
-        
+        res.status(400);
+        res.json({ message: 'Id  is missing' });
       }
     } catch (err) {
-      console.log('Error finding store', err);
-      res.json({ message: 'Error finding store', err });
+      console.log('Error creating or finding store', err);
+      res.json({ message: 'Error creating or finding store', err });
     }
   } else {
     res.json({ message: 'Method is GET' });
