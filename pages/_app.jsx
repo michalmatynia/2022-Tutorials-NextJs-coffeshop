@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import '../styles/globals.css';
-// import StoreProvider from '../store/store-context';
+import StoreProvider from '../store/store-context';
 
 function MyApp({ Component, pageProps }) {
   useEffect(() => {
@@ -8,10 +8,9 @@ function MyApp({ Component, pageProps }) {
   }, []);
 
   return (
-    <>das</>
-    // <StoreProvider>
-    // <Component {...pageProps} />
-    // </StoreProvider>
+    <StoreProvider>
+      <Component {...pageProps} />
+    </StoreProvider>
   );
 }
 
