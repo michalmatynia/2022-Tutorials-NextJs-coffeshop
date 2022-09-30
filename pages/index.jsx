@@ -26,7 +26,6 @@ export default function Home(props) {
   const { handleTrackLocation, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
-  // const [coffeeStores, setCoffeeStores] = useState([]);
   const [coffeeStoresError, setError] = useState(null);
 
   const { dispatch, state } = useContext(StoreContext);
@@ -34,14 +33,13 @@ export default function Home(props) {
   const { coffeeStores, latLong } = state;
 
   useEffect(() => {
+    console.log('useeff');
     const fetchData = async () => {
       const response = await fetch(
         `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=6`
       );
 
-      // fetchCoffeeStores({ latLong });
       const formattedCoffeeStores = await response.json();
-      // setCoffeeStores(fetchedCoffeeStores);
       dispatch({
         type: ACTION_TYPES.SET_COFFEE_STORES,
         payload: {
@@ -64,7 +62,6 @@ export default function Home(props) {
   const handleOnBannerBtnClick = () => {
     handleTrackLocation();
   };
-  // console.log(props);
 
   return (
     <div className={styles.container}>
@@ -85,7 +82,6 @@ export default function Home(props) {
         <div className={styles.heroImage}>
           <Image src="/static/hero-image.png" width={700} height={400} />
         </div>
-
         {coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
             <h2 className={styles.heading2}>Stores Near Me</h2>

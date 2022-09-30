@@ -48,71 +48,70 @@ export async function getStaticPaths() {
 }
 
 function CoffeeStore(initialProps) {
-  // const router = useRouter();
-  // const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const router = useRouter();
+  const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
 
-  // const {
-  //   state: { coffeeStores },
-  // } = useContext(StoreContext);
+  const {
+    state: { coffeeStores },
+  } = useContext(StoreContext);
 
-  // const { id } = router.query;
+  const { id } = router.query;
 
-  console.log('lll', initialProps);
+  const handleCreateCoffeeStore = useCallback(
+    async (myData) => {
+      try {
+        const { name, imgUrl, neighbourhood, address } = myData;
+        const response = await fetch('/api/createCoffeeStore', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id,
+            name,
+            voting: 0,
+            imgUrl,
+            neighbourhood: neighbourhood || '',
+            address: address || '',
+          }),
+        });
 
-  // const handleCreateCoffeeStore = useCallback(
-  //   async (myData) => {
-  //     try {
-  //       const { name, imgUrl, neighbourhood, address } = myData;
-  //       const response = await fetch('/api/createCoffeeStore', {
-  //         method: 'POST',
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         body: JSON.stringify({
-  //           id,
-  //           name,
-  //           voting: 0,
-  //           imgUrl,
-  //           neighbourhood: neighbourhood || '',
-  //           address: address || '',
-  //         }),
-  //       });
-
-  //       const dbCoffeeStore = response.json();
-  //       return dbCoffeeStore;
-  //     } catch (err) {
-  //       console.log('Error creating store', err);
-  //       return err;
-  //     }
-  //   },
-  //   [id]
-  // );
+        const dbCoffeeStore = response.json();
+        return dbCoffeeStore;
+      } catch (err) {
+        console.log('Error creating store', err);
+        return err;
+      }
+    },
+    [id]
+  );
 
   useEffect(() => {
-    // if (!router.isFallback) {
-    console.log('ss');
-    // if (initialProps?.coffeeStore && isEmpty(initialProps.coffeeStore)) {
-    //   if (coffeeStores.length > 0) {
-    //     console.log(coffeeStores);
-    //     console.log(initialProps?.coffeeStore);
-    //     const coffeeStoreFromContext = coffeeStores.find(
-    //       (each) => each.fsq_id.toString() === id
-    //     );
-    //     if (coffeeStoreFromContext) {
-    //       // setCoffeeStore(coffeeStoreFromContext);
-    //       // handleCreateCoffeeStore(coffeeStoreFromContext);
-    //     }
-    //   }
-    // }
-    // }
-  }, []);
+    if (initialProps?.coffeeStore && isEmpty(initialProps.coffeeStore)) {
+      if (coffeeStores.length > 0) {
+        const coffeeStoreFromContext = coffeeStores.find(
+          (each) => each.fsq_id.toString() === id
+        );
+        if (coffeeStoreFromContext) {
+          setCoffeeStore(coffeeStoreFromContext);
+          handleCreateCoffeeStore(coffeeStoreFromContext);
+        }
+      }
+    }
+  }, [
+    coffeeStores,
+    handleCreateCoffeeStore,
+    id,
+    initialProps.coffeeStore,
+    router.isFallback,
+  ]);
 
-  // if (router.isFallback) {
-  //   console.log('Loading...');
-  //   return <div>Loading...</div>;
-  // }
+  if (router.isFallback) {
+    console.log('Loading...');
+    return <div>Loading...</div>;
+  }
 
-  // const { location, name, distance, imgUrl } = coffeeStore;
+  const { location, name, distance, imgUrl } = coffeeStore;
 
   const handleUpvoteButton = () => {
     console.log('ts');
@@ -120,11 +119,10 @@ function CoffeeStore(initialProps) {
 
   return (
     <div className={styles.layout}>
-      dssd
-      {/* <Head>
+      <Head>
         <title>{name}</title>
-      </Head> */}
-      {/* {Object.keys(coffeeStore).length > 0 && (
+      </Head>
+      {Object.keys(coffeeStore).length > 0 && (
         <div className={styles.container}>
           <div className={styles.col1}>
             <div className={styles.backToHomeLink}>
@@ -171,7 +169,7 @@ function CoffeeStore(initialProps) {
             </button>
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 }
