@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false, // Dev Mode with additional rerender
+  reactStrictMode: false, // TRUE: Dev Mode runs with additional rerender
   swcMinify: true,
   images: {
     domains: ['images.unsplash.com'],

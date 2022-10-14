@@ -6,6 +6,7 @@ import Image from 'next/image';
 import cls from 'classnames';
 // import coffeeStoresData from '../../data/coffee-stores.json';
 import { useEffect, useState, useContext, useCallback } from 'react';
+import useSWR from 'swr';
 import fetchCoffeeStores from '../../lib/coffee-stores';
 
 import { StoreContext } from '../../store/store-context';
@@ -19,7 +20,7 @@ export async function getStaticProps(staticProps) {
 
   let latLong;
 
-  const coffeeStores = await fetchCoffeeStores({ latLong });
+  const coffeeStores = await fetchCoffeeStores({ latLong }); // Foursquare request
 
   const findCoffeeStoreById = coffeeStores.find(
     (coffeeStore) => coffeeStore.fsq_id.toString() === params.id
@@ -49,13 +50,22 @@ export async function getStaticPaths() {
 
 function CoffeeStore(initialProps) {
   const router = useRouter();
+  const { id } = router.query;
+
   const [coffeeStore, setCoffeeStore] = useState(initialProps.coffeeStore);
+  const [votingCount, setVotingCount] = useState(0);
+  const { data, error } = useSWR(`/api/getCoffeeStoreById?id=${id}`);
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      setCoffeeStore(data[0]);
+      setVotingCount(data[0].voting);
+    }
+  }, [data]);
 
   const {
     state: { coffeeStores },
   } = useContext(StoreContext);
-
-  const { id } = router.query;
 
   const handleCreateCoffeeStore = useCallback(
     async (myData) => {
@@ -93,10 +103,15 @@ function CoffeeStore(initialProps) {
           (each) => each.fsq_id.toString() === id
         );
         if (coffeeStoreFromContext) {
+          console.log(coffeeStoreFromContext);
+
           setCoffeeStore(coffeeStoreFromContext);
           handleCreateCoffeeStore(coffeeStoreFromContext);
         }
       }
+    } else {
+      // SSG
+      handleCreateCoffeeStore(initialProps.coffeeStore);
     }
   }, [
     coffeeStores,
@@ -114,8 +129,13 @@ function CoffeeStore(initialProps) {
   const { location, name, distance, imgUrl } = coffeeStore;
 
   const handleUpvoteButton = () => {
-    console.log('ts');
+    const count = votingCount + 1;
+    setVotingCount(count);
   };
+
+  if (error) {
+    return <div>Something went wrong retrieving Coffee Store Page</div>;
+  }
 
   return (
     <div className={styles.layout}>
@@ -158,7 +178,7 @@ function CoffeeStore(initialProps) {
             )}
             <div className={styles.iconWrapper}>
               <Image src="/static/icons/star.svg" width="24" height="24" />
-              <p className={styles.text}>1</p>
+              <p className={styles.text}>{votingCount}</p>
             </div>
             <button
               type="button"
