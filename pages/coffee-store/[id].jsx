@@ -97,41 +97,67 @@ function CoffeeStore(initialProps) {
   );
 
   useEffect(() => {
-    if (initialProps?.coffeeStore && isEmpty(initialProps.coffeeStore)) {
+    if (isEmpty(initialProps.coffeeStore)) {
       if (coffeeStores.length > 0) {
         const coffeeStoreFromContext = coffeeStores.find(
           (each) => each.fsq_id.toString() === id
         );
-        if (coffeeStoreFromContext) {
-          console.log(coffeeStoreFromContext);
 
+        if (coffeeStoreFromContext) {
           setCoffeeStore(coffeeStoreFromContext);
           handleCreateCoffeeStore(coffeeStoreFromContext);
         }
       }
     } else {
-      // SSG
+      // SSG // Static Site Generation
+
       handleCreateCoffeeStore(initialProps.coffeeStore);
     }
   }, [
     coffeeStores,
     handleCreateCoffeeStore,
     id,
-    initialProps.coffeeStore,
+    initialProps,
     router.isFallback,
   ]);
+
+  const handleUpvoteCoffeeStore = useCallback(async () => {
+    try {
+      const response = await fetch('/api/upvoteCoffeeStoreById', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id,
+        }),
+      });
+
+      const dbCoffeeStore = await response.json();
+
+      if (dbCoffeeStore && dbCoffeeStore.length > 0) {
+        const count = votingCount + 1;
+        setVotingCount(count);
+      }
+      return dbCoffeeStore;
+    } catch (err) {
+      console.log('Error upvoting', err);
+      return err;
+    }
+  }, [id, votingCount]);
 
   if (router.isFallback) {
     console.log('Loading...');
     return <div>Loading...</div>;
   }
-
-  const { location, name, distance, imgUrl } = coffeeStore;
+  // -- Upvote
 
   const handleUpvoteButton = () => {
-    const count = votingCount + 1;
-    setVotingCount(count);
+    handleUpvoteCoffeeStore();
   };
+  // --
+
+  const { location, name, distance, imgUrl } = coffeeStore;
 
   if (error) {
     return <div>Something went wrong retrieving Coffee Store Page</div>;

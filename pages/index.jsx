@@ -33,7 +33,6 @@ export default function Home(props) {
   const { coffeeStores, latLong } = state;
 
   useEffect(() => {
-    console.log('useeff');
     const fetchData = async () => {
       const response = await fetch(
         `/api/getCoffeeStoresByLocation?latLong=${latLong}&limit=6`
