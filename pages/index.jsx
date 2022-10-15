@@ -12,7 +12,7 @@ import fetchCoffeeStores from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/use-track-location';
 import { ACTION_TYPES, StoreContext } from '../store/store-context';
 
-export async function getStaticProps(context) {
+export async function getStaticProps() {
   const coffeeStores = await fetchCoffeeStores({});
 
   return {

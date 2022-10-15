@@ -89,7 +89,6 @@ function CoffeeStore(initialProps) {
         const dbCoffeeStore = response.json();
         return dbCoffeeStore;
       } catch (err) {
-        console.log('Error creating store', err);
         return err;
       }
     },
@@ -110,7 +109,6 @@ function CoffeeStore(initialProps) {
       }
     } else {
       // SSG // Static Site Generation
-
       handleCreateCoffeeStore(initialProps.coffeeStore);
     }
   }, [
@@ -141,13 +139,11 @@ function CoffeeStore(initialProps) {
       }
       return dbCoffeeStore;
     } catch (err) {
-      console.log('Error upvoting', err);
       return err;
     }
   }, [id, votingCount]);
 
   if (router.isFallback) {
-    console.log('Loading...');
     return <div>Loading...</div>;
   }
   // -- Upvote
