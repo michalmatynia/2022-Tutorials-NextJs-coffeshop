@@ -163,6 +163,10 @@ function CoffeeStore(initialProps) {
     <div className={styles.layout}>
       <Head>
         <title>{name}</title>
+        <meta
+          name="description"
+          content="initial-scale=1.0, width=device-width"
+        />
       </Head>
       {Object.keys(coffeeStore).length > 0 && (
         <div className={styles.container}>
@@ -189,17 +193,32 @@ function CoffeeStore(initialProps) {
 
           <div className={cls('glass', styles.col2)}>
             <div className={styles.iconWrapper}>
-              <Image src="/static/icons/places.svg" width="24" height="24" />
+              <Image
+                alt={name}
+                src="/static/icons/places.svg"
+                width="24"
+                height="24"
+              />
               <p className={styles.text}>{location.address}</p>
             </div>
             {distance && (
               <div className={styles.iconWrapper}>
-                <Image src="/static/icons/nearMe.svg" width="24" height="24" />
+                <Image
+                  alt={name}
+                  src="/static/icons/nearMe.svg"
+                  width="24"
+                  height="24"
+                />
                 <p className={styles.text}>{distance} m</p>
               </div>
             )}
             <div className={styles.iconWrapper}>
-              <Image src="/static/icons/star.svg" width="24" height="24" />
+              <Image
+                alt={name}
+                src="/static/icons/star.svg"
+                width="24"
+                height="24"
+              />
               <p className={styles.text}>{votingCount}</p>
             </div>
             <button

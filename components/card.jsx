@@ -14,6 +14,7 @@ function Card({ href, imgUrl, title }) {
           </div>
           <div className={styles.cardImageWrapper}>
             <Image
+              alt={title}
               className={styles.cardImage}
               src={imgUrl}
               width={260}
